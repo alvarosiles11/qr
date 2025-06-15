@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Banking Hub - Ingeniero de Sistemas</title>
+    <meta name="description" content="Códigos QR para pagos bancarios - Honorarios, Servicios y Pagos Personales">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="QR Banking Hub">
+    <meta property="og:description" content="Códigos QR para pagos bancarios profesionales">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px 30px;
+        }
+
+        .qr-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .qr-card.honorarios {
+            --accent-color: #e74c3c;
+        }
+
+        .qr-card.servicios {
+            --accent-color: #f39c12;
+        }
+
+        .qr-card.personales {
+            --accent-color: #27ae60;
+        }
+
+        .qr-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .honorarios .qr-icon {
+            background: #e74c3c;
+        }
+
+        .servicios .qr-icon {
+            background: #f39c12;
+        }
+
+        .personales .qr-icon {
+            background: #27ae60;
+        }
+
+        .qr-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .qr-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .qr-image-container {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-download {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-share {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-share:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .qr-grid {
+                grid-template-columns: 1fr;
+                padding: 20px 15px;
+            }
+            
+            .qr-card {
+                padding: 20px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>🏦 QR Banking Hub</h1>
+                <p>Códigos QR para Pagos Bancarios</p>
+                <p class="subtitle">Ingeniero de Sistemas - Soluciones de Pago Digital</p>
+            </div>
+        </header>
+
+        <main class="qr-grid">
+            <!-- Honorarios Laborales -->
+            <div class="qr-card honorarios">
+                <div class="status-indicator"></div>
+                <div class="qr-header">
+                    <div class="qr-icon">💼</div>
+                    <div class="qr-title">Honorarios Laborales</div>
+                </div>
+                <div class="qr-description">
+                    Para pagos de servicios profesionales, consultorías técnicas y desarrollo de software.
+                </div>
+                <div class="qr-image-container">
+                    <div class="qr-placeholder">
+                        Reemplaza esta área con tu código QR de Honorarios Laborales
+                        <br><br>
+                        <small>Formato recomendado: PNG 200x200px</small>
+                    </div>
+                </div>
+                <div class="qr-actions">
+                    <button class="btn btn-download" onclick="downloadQR('honorarios')">
+                        📥 Descargar
+                    </button>
+                    <button class="btn btn-share" onclick="shareQR('honorarios')">
+                        📤 Compartir
+                    </button>
+                </div>
+            </div>
+
+            <!-- Servicios -->
+            <div class="qr-card servicios">
+                <div class="status-indicator"></div>
+                <div class="qr-header">
+                    <div class="qr-icon">⚙️</div>
+                    <div class="qr-title">Servicios Técnicos</div>
+                </div>
+                <div class="qr-description">
+                    Para pagos de servicios de soporte técnico, mantenimiento de sistemas y proyectos IT.
+                </div>
+                <div class="qr-image-container">
+                    <div class="qr-placeholder">
+                        Reemplaza esta área con tu código QR de Servicios
+                        <br><br>
+                        <small>Formato recomendado: PNG 200x200px</small>
+                    </div>
+                </div>
+                <div class="qr-actions">
+                    <button class="btn btn-download" onclick="downloadQR('servicios')">
+                        📥 Descargar
+                    </button>
+                    <button class="btn btn-share" onclick="shareQR('servicios')">
+                        📤 Compartir
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pagos Personales -->
+            <div class="qr-card personales">
+                <div class="status-indicator"></div>
+                <div class="qr-header">
+                    <div class="qr-icon">👤</div>
+                    <div class="qr-title">Pagos Personales</div>
+                </div>
+                <div class="qr-description">
+                    Para transferencias personales, reembolsos y pagos entre amigos y familiares.
+                </div>
+                <div class="qr-image-container">
+                    <div class="qr-placeholder">
+                        Reemplaza esta área con tu código QR de Pagos Personales
+                        <br><br>
+                        <small>Formato recomendado: PNG 200x200px</small>
+                    </div>
+                </div>
+                <div class="qr-actions">
+                    <button class="btn btn-download" onclick="downloadQR('personales')">
+                        📥 Descargar
+                    </button>
+                    <button class="btn btn-share" onclick="shareQR('personales')">
+                        📤 Compartir
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p><strong>Ingeniero de Sistemas</strong> - Soluciones Digitales Profesionales</p>
+            <div>
+                <span class="tech-badge">HTML5</span>
+                <span class="tech-badge">CSS3</span>
+                <span class="tech-badge">JavaScript</span>
+                <span class="tech-badge">Responsive Design</span>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                © 2024 - Todos los derechos reservados
+            </p>
+        </footer>
+    </div>
+
+    <!-- Notificación de copia -->
+    <div class="copy-notification" id="copyNotification">
+        ✅ Enlace copiado al portapapeles
+    </div>
+
+    <script>
+        // Función para descargar QR
+        function downloadQR(type) {
+            // Aquí deberías reemplazar con la lógica real de descarga
+            // Por ahora simula la descarga
+            const link = document.createElement('a');
+            link.download = `qr-${type}.png`;
+            // link.href = 'ruta-a-tu-imagen-qr.png'; // Reemplaza con la ruta real
+            
+            // Simulación de descarga
+            showNotification(`Descargando QR de ${type}...`);
+            
+            // Descomenta la siguiente línea cuando tengas las imágenes reales
+            // link.click();
+        }
+
+        // Función para compartir QR
+        async function shareQR(type) {
+            const url = window.location.href;
+            const text = `Código QR para ${type} - Pagos Bancarios`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'QR Banking Hub',
+                        text: text,
+                        url: url
+                    });
+                } catch (err) {
+                    console.log('Error sharing:', err);
+                    fallbackShare(url, text);
+                }
+            } else {
+                fallbackShare(url, text);
+            }
+        }
+
+        // Función de respaldo para compartir
+        function fallbackShare(url, text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
+                    showNotification('Enlace copiado al portapapeles');
+                });
+            } else {
+                // Fallback para navegadores más antiguos
+                const textArea = document.createElement('textarea');
+                textArea.value = `${text}\n${url}`;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Enlace copiado al portapapeles');
+            }
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Animación de entrada suave
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.qr-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        // Efecto de paralaje suave en el header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            if (header) {
+                header.style.transform = `translateY(${rate}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
